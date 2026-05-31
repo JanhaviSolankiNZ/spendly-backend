@@ -7,6 +7,7 @@ import morgan from "morgan";
 import connectDB from "./config/db";
 import authRoutes from "./routes/authRoute";
 import expenseRoutes from "./routes/expenseRoute";
+import incomeRoutes from "./routes/incomeRoute";
 import { protect } from "./middleware/authMiddleware";
 
 const server = express();
@@ -27,7 +28,7 @@ if (process.env.NODE_ENV === "development") {
 
 server.use("/api/auth",authRoutes);
 server.use("/api/expense", protect, expenseRoutes);
-
+server.use("/api/income", protect, incomeRoutes);
 connectDB();
 
 const PORT = 5000;
