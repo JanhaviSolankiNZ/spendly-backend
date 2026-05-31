@@ -1,0 +1,47 @@
+import { Request, Response, NextFunction } from "express";
+import { sendError } from "../utils/response";
+import { verifyAccessToken } from "../utils/jwt";
+import { JwtPayload } from "jsonwebtoken";
+import { findUserById } from "../repositories/authRepository";
+
+declare global{
+    namespace Express{
+        interface Request{
+            user?:{
+                id: string;
+            }
+        }
+    }
+}
+
+
+export const protect= async (req: Request, res: Response, next: NextFunction ) => {
+    try{
+        const authHeader = req.headers.authorization;
+        if(!authHeader || !authHeader.startsWith("Bearer ")){
+            return sendError(res, "Access token required", 401);
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        const decoded = verifyAccessToken(token) as  JwtPayload;
+
+        if(!decoded){
+            return sendError(res, "Invalid or expired access token", 401);
+        }
+
+        const user = await findUserById(decoded.id);
+
+        if(!user){
+            return sendError(res, "User no longer exists", 401);
+        }
+
+        req.user ={
+            id: decoded.id
+        }
+        next();
+
+    }catch(error){
+        return sendError(res, "Authentication failed", 401);
+    }
+}
