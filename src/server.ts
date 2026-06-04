@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 server.use("/api/auth",authRoutes);
-server.use("/api/expense", protect, expenseRoutes);
+server.use("/api/expenses", protect, expenseRoutes);
 server.use("/api/income", protect, incomeRoutes);
 connectDB();
 
