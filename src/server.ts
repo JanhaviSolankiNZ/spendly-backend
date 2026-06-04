@@ -17,10 +17,17 @@ server.use(cookieParser());
 server.use(helmet());
 server.use(
   cors({
-    origin: process.env.CLIENT_URL, // FE URL
-    credentials: true // Allow cookies
+    origin: [
+    'http://localhost:3000',     // local frontend dev
+    'http://localhost:5173',     // if using Vite
+    process.env.CLIENT_URL! // your deployed frontend URL
+  ],
+  credentials: true,            // needed if you're using cookies/JWT
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
+server.options('*', cors());
 
 if (process.env.NODE_ENV === "development") {
   server.use(morgan("dev"));
@@ -31,7 +38,7 @@ server.use("/api/expense", protect, expenseRoutes);
 server.use("/api/income", protect, incomeRoutes);
 connectDB();
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);
 });
