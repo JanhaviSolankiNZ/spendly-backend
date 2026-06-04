@@ -17,7 +17,7 @@ server.use(cookieParser());
 server.use(helmet());
 server.use(
   cors({
-    origin: "http://localhost:5173", // FE URL
+    origin: process.env.CLIENT_URL, // FE URL
     credentials: true // Allow cookies
   })
 );
