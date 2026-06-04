@@ -27,7 +27,7 @@ server.use(
   allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
-server.options('*', cors());
+server.options('/{*path}', cors());
 
 if (process.env.NODE_ENV === "development") {
   server.use(morgan("dev"));
