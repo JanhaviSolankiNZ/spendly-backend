@@ -77,7 +77,7 @@ export const login = async (req: Request, res: Response) => {
     );
 
     saveRefreshToken(user, refreshToken);
-
+    user.save();
     sendSuccess(
       res,
       {
@@ -133,7 +133,6 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   if (user === null) {
     return sendError(res, "User not found", 401);
   }
-
   const storedToken = user.refreshTokens.find((t) => t.token === token);
   if (!storedToken) {
     user.refreshTokens = [];
@@ -150,7 +149,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   );
 
   saveRefreshToken(user, refreshToken);
-
+  user.save();
   sendSuccess(
     res,
     {
