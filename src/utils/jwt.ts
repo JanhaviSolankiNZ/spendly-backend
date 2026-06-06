@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
+import { type CookieOptions } from "express";
 
 export const createAccessToken = (userId: Types.ObjectId) => {
   return jwt.sign(
@@ -30,7 +31,7 @@ export const verifyRefreshToken = (token:string) => {
     return jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
 };
 
-export const refreshCookieOptions = {
+export const refreshCookieOptions: CookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
