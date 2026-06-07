@@ -11,6 +11,7 @@ import incomeRoutes from "./routes/incomeRoute";
 import { protect } from "./middleware/authMiddleware";
 
 const server = express();
+server.set("trust proxy", 1);
 server.use(express.json({ limit: "10mb" }));
 server.use(express.urlencoded({ extended: true, limit: "10kb" }));
 server.use(cookieParser());
@@ -27,7 +28,6 @@ server.use(
   allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
-server.options('/{*path}', cors());
 
 if (process.env.NODE_ENV === "development") {
   server.use(morgan("dev"));
