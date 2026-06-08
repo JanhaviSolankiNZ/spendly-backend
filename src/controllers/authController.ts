@@ -67,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
 
     const user = await loginUser(email, password);
     if (!user) {
-      sendError(res, "Invalid email or password", 401);
+      return sendError(res, "Invalid email or password", 401);
     }
     const { refreshToken, accessToken } = generateTokens(user._id);
     res.cookie("refreshToken", refreshToken, refreshCookieOptions);
@@ -77,7 +77,7 @@ export const login = async (req: Request, res: Response) => {
     );
 
     saveRefreshToken(user, refreshToken);
-    user.save();
+    await user.save();
     sendSuccess(
       res,
       {
@@ -107,7 +107,7 @@ export const logout = async (req: Request, res: Response) => {
         $pull: { refreshTokens: { token } },
       });
     }
-    res.clearCookie("refreshToken", { path: "api/auth" });
+    res.clearCookie("refreshToken", { path: "/api/auth" });
     sendSuccess(res, null, "Logged out successfully", 200);
   } catch (error) {
     if (error instanceof Error) {
@@ -122,13 +122,13 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   console.log("cookies:", req.cookies);
   console.log("cookie header:", req.headers.cookie);
   if (!token) {
-    sendError(res, "No refresh token provided", 401);
+   return sendError(res, "No refresh token provided", 401);
   }
 
   const decoded = verifyRefreshToken(token) as JwtPayload;
 
   if (!decoded) {
-    sendError(res, "Invalid refresh token", 401);
+   return sendError(res, "Invalid refresh token", 401);
   }
 
   const user = await findUserById(decoded.id);
@@ -151,7 +151,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   );
 
   saveRefreshToken(user, refreshToken);
-  user.save();
+  await user.save();
   sendSuccess(
     res,
     {

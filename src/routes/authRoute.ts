@@ -13,7 +13,7 @@ const authLimier = rateLimiter({
 
 router.post("/register", authLimier, register);
 router.post("/login", authLimier, login);
-router.get("/logout", logout);
+router.post("/logout", logout);
 router.post("/refreshAccessToken", refreshAccessToken);
 
 export default router;
