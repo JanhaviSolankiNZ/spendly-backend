@@ -114,7 +114,7 @@ export const getExpense = async (req: Request, res: Response) => {
   try {
     const { expenseId } = req.params as { expenseId: string };
    const expense =  await getExpenseService(req.user!.id, expenseId);
-    sendSuccess(res, expense, "Expense fetched successfully", 200);
+    sendSuccess(res, {expense}, "Expense fetched successfully", 200);
   } catch (error) {
     if (error instanceof Error) {
       return sendError(
