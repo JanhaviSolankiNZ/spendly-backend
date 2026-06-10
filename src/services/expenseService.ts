@@ -1,7 +1,7 @@
 import { groqAxiosInstance } from "../config/axios";
 import { EXPENSE_CATEGORIES, normalise, validateMonth } from "../utils/constants";
 import { IExpense } from "../models/Expense";
-import { createExpense, deleteExpenseById, findExpenses, getExpenseSummary, IExpenseFilters, updateExpenseById } from "../repositories/expenseRepository";
+import { createExpense, deleteExpenseById, findExpenseById, findExpenses, getExpenseSummary, IExpenseFilters, updateExpenseById } from "../repositories/expenseRepository";
 
 export const categoriseWithAI = async (
   description: string,
@@ -54,11 +54,15 @@ export const updateExpenseService = async (userId: string, expenseId: string, bo
   const updatedExpense = await updateExpenseById(userId, expenseId, body);
   return updatedExpense;
 };
-export const getExpenseService = async (userId: string, filters: IExpenseFilters) => {
+export const getExpensesService = async (userId: string, filters: IExpenseFilters) => {
   return findExpenses(userId, filters);
 };
 
 export const getExpenseSummaryService = async (userId:string, month: string) => {
   validateMonth(month);
   return getExpenseSummary(userId, month);
+};
+
+export const getExpenseService = async (userId: string, expenseId: string) => {
+  return findExpenseById(userId, expenseId);
 };

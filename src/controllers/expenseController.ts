@@ -4,9 +4,10 @@ import {
   categoriseWithAI,
   createExpenseService,
   deleteExpenseService,
-  getExpenseService,
+  getExpensesService,
   updateExpenseService,
-  getExpenseSummaryService
+  getExpenseSummaryService,
+  getExpenseService
 } from "../services/expenseService";
 import { sendError, sendSuccess } from "../utils/response";
 import { IExpenseFilters } from "../repositories/expenseRepository";
@@ -99,11 +100,28 @@ export const listExpenses = async (req: Request, res: Response) => {
       limit: req.query.limit ? Number(req.query.limit) : undefined
     }
 
-    const result = await getExpenseService(req.user!.id, filters as Partial<IExpenseFilters>);
+    const result = await getExpensesService(req.user!.id, filters as Partial<IExpenseFilters>);
     sendSuccess(res, result, "Expenses fetched successfully", 200);
   }catch(error){
      if (error instanceof Error) {
       return sendError(res, error.message, 500);
+    }
+    sendError(res, "Something went wrong", 500);
+  }
+};
+
+export const getExpense = async (req: Request, res: Response) => {
+  try {
+    const { expenseId } = req.params as { expenseId: string };
+   const expense =  await getExpenseService(req.user!.id, expenseId);
+    sendSuccess(res, expense, "Expense fetched successfully", 200);
+  } catch (error) {
+    if (error instanceof Error) {
+      return sendError(
+        res,
+        error.message,
+        error.message === "Expense not found" ? 404 : 500,
+      );
     }
     sendError(res, "Something went wrong", 500);
   }

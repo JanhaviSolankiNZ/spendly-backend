@@ -1,6 +1,6 @@
 import express from "express";
 const rateLimiter = require("express-rate-limit");
-import { addExpense, createExpenseSummary, deleteExpense, getCategoryWithAI, listExpenses, updateExpense } from "../controllers/expenseController";
+import { addExpense, createExpenseSummary, deleteExpense, getCategoryWithAI, getExpense, listExpenses, updateExpense } from "../controllers/expenseController";
 import { createExpenseValidator, listExpenseValidator, updateExpenseValidator } from "../middleware/expenseValidators";
 
 const readLimiter = rateLimiter({
@@ -28,4 +28,5 @@ router.patch("/:expenseId", writeLimiter, updateExpenseValidator, updateExpense)
 router.delete("/:expenseId", writeLimiter, deleteExpense);
 router.get("/", readLimiter, listExpenseValidator, listExpenses);
 router.get("/analytics/summary", readLimiter, createExpenseSummary);
+router.get("/:expenseId", readLimiter, getExpense);
 export default router;
