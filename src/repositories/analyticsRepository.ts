@@ -51,8 +51,8 @@ export const getAnalyticsSummary = async (userId: string, month: string) => {
 
     const topCategory = expenseByCategory[0]
     ? {
-        name: expenseByCategory[0]._id,
-        total: expenseByCategory[0].total,
+        name: expenseByCategory[0]._id as string,
+        total: expenseByCategory[0].total as number,
         percent: totalExpenses > 0 ? parseFloat(((expenseByCategory[0].total/totalExpenses)*100).toFixed(1)) : 0
     } : null;
 
@@ -72,9 +72,9 @@ export const getAnalyticsSummary = async (userId: string, month: string) => {
         expensesPercentage: totalIncome > 0
         ?parseFloat(((totalExpenses/totalIncome)*100).toFixed(1)) : 0,
         byCategory: expenseByCategory.map((c) => ({
-            category: c._id,
-            total: c.total,
-            count: c.count,
+            category: c._id as string,
+            total: c.total as number,
+            count: c.count as number,
             percent: totalExpenses > 0
         ? parseFloat(((c.total / totalExpenses) * 100).toFixed(1))
         : 0,
@@ -82,7 +82,7 @@ export const getAnalyticsSummary = async (userId: string, month: string) => {
     }
 }
 
-export const getSixMonthTrends = async (userId: string, currentMonth: string) => {
+export const getSixMonthTrend = async (userId: string, currentMonth: string) => {
     const uid = new Types.ObjectId(userId);
     const [year, month] = currentMonth.split("_").map(Number);
     const end = new Date(year, month - 1, 0, 23, 59, 59);
@@ -108,11 +108,11 @@ export const getSixMonthTrends = async (userId: string, currentMonth: string) =>
 
     return{
         trend: trend.map(t => ({
-            year: t._id.year,
-            month: t._id.month,
+            year: t._id.year as number,
+            month: t._id.month as number,
             label: `{t._id.year}-${String(t._id.month).padStart(2, "0")}`,
-            total: t.total,
-            count: t.count,
+            total: t.total as number,
+            count: t.count as number,
             current: `{t._id.year}-${String(t._id.month).padStart(2, "0")}` === currentMonth,
         })),
         average

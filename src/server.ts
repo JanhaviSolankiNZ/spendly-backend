@@ -8,6 +8,7 @@ import connectDB from "./config/db";
 import authRoutes from "./routes/authRoute";
 import expenseRoutes from "./routes/expenseRoute";
 import incomeRoutes from "./routes/incomeRoute";
+import analyticsRoutes from "./routes/analyticsRoute";
 import { protect } from "./middleware/authMiddleware";
 
 const server = express();
@@ -36,6 +37,7 @@ if (process.env.NODE_ENV === "development") {
 server.use("/api/auth",authRoutes);
 server.use("/api/expenses", protect, expenseRoutes);
 server.use("/api/income", protect, incomeRoutes);
+server.use("/api/analytics", protect, analyticsRoutes);
 connectDB();
 
 const PORT = process.env.PORT || 5000;
