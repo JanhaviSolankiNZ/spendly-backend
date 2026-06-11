@@ -1,7 +1,7 @@
 import { groqAxiosInstance } from "../config/axios";
 import { EXPENSE_CATEGORIES, normalise, validateMonth } from "../utils/constants";
 import { IExpense } from "../models/Expense";
-import { createExpense, deleteExpenseById, findExpenseById, findExpenses, getExpenseSummary, IExpenseFilters, updateExpenseById } from "../repositories/expenseRepository";
+import { createExpense, deleteExpenseById, findExpenseById, findExpenses, getExpensesForExport, getExpenseSummary, IExpenseFilters, updateExpenseById } from "../repositories/expenseRepository";
 
 export const categoriseWithAI = async (
   description: string,
@@ -66,3 +66,15 @@ export const getExpenseSummaryService = async (userId:string, month: string) => 
 export const getExpenseService = async (userId: string, expenseId: string) => {
   return findExpenseById(userId, expenseId);
 };
+
+export const getExpensesForExportService = async (userId: string, month: string) => {
+  validateMonth(month);
+  const expenses = await getExpensesForExport(userId, month);
+  return expenses.map((e) => ({
+    Description: e.description,
+    Amount: e.amount,
+    Category: e.category,
+    Date: new Date(e.date).toISOString().split("T")[0],
+    Notes: e.notes ?? ""
+  }))
+}

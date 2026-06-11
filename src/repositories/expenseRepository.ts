@@ -182,3 +182,24 @@ export const getExpenseSummary = async (userId: string, month: string) => {
     vsLastMonth,
   };
 };
+
+export const getExpensesForExport = async (userId: string, month: string) => {
+  const start = new Date(`${month}-01`);
+  const end = new Date(
+    start.getFullYear(),
+    start.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+  );
+  return Expense.find(
+    {
+      userId: new Types.ObjectId(userId),
+      date: { $gte: start, $lte: end },
+    },
+    { _id: 0, userId: 0, _v: 0 },
+  )
+    .sort({ date: -1 })
+    .lean();
+};

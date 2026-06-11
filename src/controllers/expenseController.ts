@@ -7,10 +7,12 @@ import {
   getExpensesService,
   updateExpenseService,
   getExpenseSummaryService,
-  getExpenseService
+  getExpenseService,
+  getExpensesForExportService
 } from "../services/expenseService";
 import { sendError, sendSuccess } from "../utils/response";
 import { IExpenseFilters } from "../repositories/expenseRepository";
+import { Parser } from "json2csv";
 
 export const getCategoryWithAI = async (req: Request, res: Response) => {
   try {
@@ -135,6 +137,32 @@ export const createExpenseSummary = async (req: Request, res: Response) => {
       console.log(month)
       const data = await getExpenseSummaryService(req.user!.id, month);
       sendSuccess(res, data, "Summary fetched successfully", 200);
+  }catch(error){
+    if (error instanceof Error) {
+      return sendError(res, error.message, 400);
+    }
+    sendError(res, "Something went wrong", 500);
+  }
+}
+
+export const exportExpenseCsv = async (req: Request, res: Response) => {
+  try {
+    const month = (req.query.month as string) || new Date().toISOString().slice(0, 7);
+    const data = await getExpensesForExportService(req.user!.id, month);
+    if(data.length === 0){
+      return sendError(res, "No expenses found for this month", 404);
+    }
+
+    const parser = new Parser({
+      fields: ["Description", "Amount", "Category", "Date", "Notes"]
+    });
+
+    const csv = parser.parse(data);
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename=Expenses_${month}.csv`);
+    res.status(200).send(csv);
+
   }catch(error){
     if (error instanceof Error) {
       return sendError(res, error.message, 400);
