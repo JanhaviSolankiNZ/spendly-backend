@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import passport from "./config/passPort";
+import passport from "./config/passportconfig"
 import connectDB from "./config/db";
 import authRoutes from "./routes/authRoute";
 import expenseRoutes from "./routes/expenseRoute";
