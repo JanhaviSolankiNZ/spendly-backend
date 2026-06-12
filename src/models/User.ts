@@ -1,4 +1,4 @@
-import mongoose, {Document} from "mongoose";
+import mongoose, {Document, Types} from "mongoose";
 import bcrypt from "bcryptjs";
 
 export interface IRefreshToken {
@@ -13,6 +13,7 @@ export interface IUser extends Document {
     email: string;
     password: string;
     refreshTokens: IRefreshToken[];
+    googleId?: string;
     createdAt: Date;
     updatedAt: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
@@ -50,7 +51,6 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
       minlength: [7, "Password must be at least 7 characters long"],
       select: false, // Exclude password from query results by default
     },
@@ -63,6 +63,12 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
         expiresAt: { type: Date, required: true}
       },
     ],
+    googleId: {
+      type:     String,
+      default:  undefined,
+      sparse:   true,  // allows null but enforces unique when present
+      unique:   true,
+    },
   },
   { timestamps: true },
 );

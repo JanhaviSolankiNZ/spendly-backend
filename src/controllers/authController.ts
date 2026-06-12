@@ -163,4 +163,22 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   );
 };
 
-export const refresh = (req: Request, res: Response) => {};
+export const googleCallback = async (req: Request, res: Response) => {
+  try{
+    const user = await findUserById(req.user?.id!);
+    if (!user) return sendError(res, "Google authentication failed", 401);
+
+    const accessToken  = createAccessToken(user._id);
+    const refreshToken = createRefreshToken(user._id);
+    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
+    saveRefreshToken(user, refreshToken);
+    await user.save();
+
+    res.redirect(
+      `${process.env.CLIENT_URL}/auth/google/success?token=${accessToken}&user=${encodeURIComponent(JSON.stringify(user.toPublicProfile()))}`
+    );
+
+  }catch{
+    res.redirect(`${process.env.CLIENT_URL}/signin?error=google_failed`);
+  }
+}

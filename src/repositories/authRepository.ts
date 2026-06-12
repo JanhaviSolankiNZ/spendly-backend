@@ -22,3 +22,24 @@ export const saveRefreshToken = (user: IUser, refreshToken: string) => user.refr
 export const updateUser = (userId: string, data: {email?: string; password?: string; username?: string}) => User.findByIdAndUpdate(new Types.ObjectId(userId), data);
 
 export const removeUser = (userId: string) => User.findByIdAndDelete(new Types.ObjectId(userId));
+
+export const findOrCreateGoogleUser = async ({googleId, email, username}: {googleId: string; email:string; username: string}) => {
+    let user = await User.findOne({googleId});
+    if(user) return user;
+
+    user = await User.findOne({email});
+
+    if(user){
+        user.googleId = googleId;
+        await user.save();
+        return user;
+    }
+
+    console.log(googleId, email, username);
+
+    return User.create({
+        googleId,
+        email,
+        username
+    })
+}

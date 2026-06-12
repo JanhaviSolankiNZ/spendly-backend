@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import passport from "./config/passPort";
 import connectDB from "./config/db";
 import authRoutes from "./routes/authRoute";
 import expenseRoutes from "./routes/expenseRoute";
@@ -17,6 +18,7 @@ server.set("trust proxy", 1);
 server.use(express.json({ limit: "10mb" }));
 server.use(express.urlencoded({ extended: true, limit: "10kb" }));
 server.use(cookieParser());
+server.use(passport.initialize());
 server.use(helmet());
 server.use(
   cors({

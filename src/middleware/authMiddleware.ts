@@ -6,11 +6,14 @@ import { findUserById } from "../repositories/authRepository";
 
 declare global{
     namespace Express{
-        interface Request{
-            user?:{
-                id: string;
-            }
-        }
+        interface User {          // ← Passport reads from this interface
+      id:       string;
+      email:    string;
+      username: string;
+    }
+    interface Request {
+      user?: User;            // ← now uses the interface above
+    }
     }
 }
 
@@ -38,7 +41,7 @@ export const protect= async (req: Request, res: Response, next: NextFunction ) =
 
         req.user ={
             id: decoded.id
-        }
+        } as Express.User;
         next();
 
     }catch(error){
