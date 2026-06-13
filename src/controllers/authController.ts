@@ -7,6 +7,7 @@ import {
   createAccessToken,
   createRefreshToken,
   refreshCookieOptions,
+  sessionCookieOptions,
   verifyAccessToken,
   verifyRefreshToken,
 } from "../utils/jwt";
@@ -33,10 +34,7 @@ export const register = async (req: Request, res: Response) => {
     }
     const { email, username, password } = req.body;
 
-    const newUser = await registerUser(email, password, username);
-    const { refreshToken, accessToken } = generateTokens(newUser._id);
-    res.cookie("refreshToken", refreshToken, refreshCookieOptions);
-    res.cookie("accessToken", accessToken, accessCookieOptions);
+    await registerUser(email, password, username);
     sendSuccess(
       res,
       {
@@ -75,6 +73,7 @@ export const login = async (req: Request, res: Response) => {
     const { refreshToken, accessToken } = generateTokens(user._id);
     res.cookie("refreshToken", refreshToken, refreshCookieOptions);
     res.cookie("accessToken", accessToken, accessCookieOptions);
+    res.cookie("hasSession", "true", sessionCookieOptions);
     user.refreshTokens = user.refreshTokens.filter(
       (t) => t.expiresAt && t.expiresAt > new Date() && !t.isRevoked,
     );
@@ -111,6 +110,7 @@ export const logout = async (req: Request, res: Response) => {
     }
     res.clearCookie("refreshToken", { path: "/api/auth" });
     res.clearCookie("accessToken", { path: "/api" });
+    res.clearCookie("hasSession");
     sendSuccess(res, null, "Logged out successfully", 200);
   } catch (error) {
     if (error instanceof Error) {
@@ -149,6 +149,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   const { refreshToken, accessToken } = generateTokens(user._id);
   res.cookie("refreshToken", refreshToken, refreshCookieOptions);
   res.cookie("accessToken", accessToken, accessCookieOptions);
+  res.cookie("hasSession", "true", sessionCookieOptions);
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.expiresAt && t.expiresAt > new Date() && !t.isRevoked,
   );

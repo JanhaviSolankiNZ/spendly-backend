@@ -46,3 +46,10 @@ export const accessCookieOptions: CookieOptions = {
   maxAge: 15 * 60 * 1000, // 15 minutes
   path: "/api", // IMPORTANT
 };
+
+export const sessionCookieOptions: CookieOptions= {
+  maxAge: 7 * 24 * 60 * 60 * 1000, // match refresh token expiry
+  httpOnly: false,
+  secure: true,
+  sameSite: "none",
+}
