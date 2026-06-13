@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import Income from "../models/Income";
 import Expense from "../models/Expense";
+import Budget from "../models/Budget";
 
 const monthRange = (month:string) => {
     const start = new Date(`${month}-01`);
@@ -118,3 +119,37 @@ export const getSixMonthTrend = async (userId: string, currentMonth: string) => 
         average
     }
 }
+
+export const getBudgetUtilisation = async (userId: string, month: string) => {
+  const { start, end } = monthRange(month);
+  const uid = new Types.ObjectId(userId);
+
+  const budgets = await Budget.find({ userId: uid }).lean();
+  if (budgets.length === 0) return { budgets: [] };
+
+  const spent = await Expense.aggregate([
+    { $match: { userId: uid, date: { $gte: start, $lte: end } } },
+    { $group: { _id: "$category", total: { $sum: "$amount" } } },
+  ]);
+
+  const spentMap: Record<string, number> = {};
+  spent.forEach((s) => { spentMap[s._id] = s.total; });
+
+  return {
+    budgets: budgets.map((b) => {
+      const spentAmount = spentMap[b.category] ?? 0;
+      const percent     = b.limit > 0
+        ? parseFloat(((spentAmount / b.limit) * 100).toFixed(1))
+        : 0;
+
+      return {
+        category:     b.category,
+        limit:        b.limit,
+        spent:        spentAmount,
+        remaining:    Math.max(b.limit - spentAmount, 0),
+        percent,
+        isOverBudget: spentAmount > b.limit,
+      };
+    }),
+  };
+};

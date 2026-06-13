@@ -1,4 +1,4 @@
-import { getAnalyticsSummary, getSixMonthTrend } from "../repositories/analyticsRepository";
+import { getAnalyticsSummary, getBudgetUtilisation, getSixMonthTrend } from "../repositories/analyticsRepository";
 
 const validateMonth = (month: string) => {
   if (!/^\d{4}-\d{2}$/.test(month)) {
@@ -21,4 +21,13 @@ export const getSixMonthTrendService = async (
 ) => {
   validateMonth(currentMonth);
   return getSixMonthTrend(userId, currentMonth);
+};
+
+
+export const getBudgetUtilisationService = async (
+  userId: string,
+  month:  string
+) => {
+  validateMonth(month);
+  return getBudgetUtilisation(userId, month);
 };

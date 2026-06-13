@@ -3,6 +3,7 @@ import rateLimit    from "express-rate-limit";
 import { protect }  from "../middleware/authMiddleware";
 import {
   getAnalyticsSummary,
+  getBudgetUtilisation,
   getSixMonthTrend
 } from "../controllers/analyticsController";
 
@@ -21,5 +22,5 @@ router.use(protect);
 
 router.get("/summary", readLimiter, getAnalyticsSummary);
 router.get("/trend",   readLimiter, getSixMonthTrend);
-
+router.get("/budget",  readLimiter, getBudgetUtilisation);
 export default router;

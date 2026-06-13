@@ -11,6 +11,7 @@ import expenseRoutes from "./routes/expenseRoute";
 import incomeRoutes from "./routes/incomeRoute";
 import analyticsRoutes from "./routes/analyticsRoute";
 import dashboardRoutes from "./routes/dashboardRoute";
+import budgetRoutes from "./routes/budgetRoute";
 import { protect } from "./middleware/authMiddleware";
 
 const server = express();
@@ -42,6 +43,7 @@ server.use("/api/expenses", protect, expenseRoutes);
 server.use("/api/income", protect, incomeRoutes);
 server.use("/api/analytics", protect, analyticsRoutes);
 server.use("/api/dashboard", protect, dashboardRoutes);
+server.use("/api/budgets", protect, budgetRoutes);
 connectDB();
 
 const PORT = process.env.PORT || 5000;
