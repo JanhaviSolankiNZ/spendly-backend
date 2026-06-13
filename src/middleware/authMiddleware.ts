@@ -20,12 +20,10 @@ declare global{
 
 export const protect= async (req: Request, res: Response, next: NextFunction ) => {
     try{
-        const authHeader = req.headers.authorization;
-        if(!authHeader || !authHeader.startsWith("Bearer ")){
+        const token = req.cookies.accessToken;
+        if(!token){
             return sendError(res, "Access token required", 401);
         }
-
-        const token = authHeader.split(" ")[1];
 
         const decoded = verifyAccessToken(token) as  JwtPayload;
 

@@ -3,9 +3,11 @@ import { registerUser, loginUser } from "../services/authService";
 import { validationResult } from "express-validator";
 import { sendSuccess, sendError } from "../utils/response";
 import {
+  accessCookieOptions,
   createAccessToken,
   createRefreshToken,
   refreshCookieOptions,
+  verifyAccessToken,
   verifyRefreshToken,
 } from "../utils/jwt";
 import { Types } from "mongoose";
@@ -34,10 +36,11 @@ export const register = async (req: Request, res: Response) => {
     const newUser = await registerUser(email, password, username);
     const { refreshToken, accessToken } = generateTokens(newUser._id);
     res.cookie("refreshToken", refreshToken, refreshCookieOptions);
+    res.cookie("accessToken", accessToken, accessCookieOptions);
     sendSuccess(
       res,
       {
-        accessToken,
+
       },
       "User registered successfully",
       201,
@@ -71,7 +74,7 @@ export const login = async (req: Request, res: Response) => {
     }
     const { refreshToken, accessToken } = generateTokens(user._id);
     res.cookie("refreshToken", refreshToken, refreshCookieOptions);
-
+    res.cookie("accessToken", accessToken, accessCookieOptions);
     user.refreshTokens = user.refreshTokens.filter(
       (t) => t.expiresAt && t.expiresAt > new Date() && !t.isRevoked,
     );
@@ -81,7 +84,6 @@ export const login = async (req: Request, res: Response) => {
     sendSuccess(
       res,
       {
-        accessToken,
         user: user.toPublicProfile(),
       },
       "Authentication successful",
@@ -145,7 +147,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   user.refreshTokens = user.refreshTokens.filter((rt) => rt.token !== token);
   const { refreshToken, accessToken } = generateTokens(user._id);
   res.cookie("refreshToken", refreshToken, refreshCookieOptions);
-
+  res.cookie("accessToken", accessToken, accessCookieOptions);
   user.refreshTokens = user.refreshTokens.filter(
     (t) => t.expiresAt && t.expiresAt > new Date() && !t.isRevoked,
   );
@@ -155,7 +157,6 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
   sendSuccess(
     res,
     {
-      accessToken,
       user: user.toPublicProfile(),
     },
     "New access token is generated successfully",
@@ -171,6 +172,7 @@ export const googleCallback = async (req: Request, res: Response) => {
     const accessToken  = createAccessToken(user._id);
     const refreshToken = createRefreshToken(user._id);
     res.cookie("refreshToken", refreshToken, refreshCookieOptions);
+    res.cookie("accessToken", accessToken, accessCookieOptions);
     saveRefreshToken(user, refreshToken);
     await user.save();
 
@@ -182,3 +184,16 @@ export const googleCallback = async (req: Request, res: Response) => {
     res.redirect(`${process.env.CLIENT_URL}/signin?error=google_failed`);
   }
 }
+
+
+export const getMe = async (req: Request, res: Response) => {
+  try {
+    const user = await findUserById(req.user?.id!);
+    if(!user){
+      return sendError(res, "Invalid Access Token! Please sign in!", 401);
+    }
+    return sendSuccess(res, { user: user.toPublicProfile() });
+  } catch {
+    return sendError(res, "Invalid session", 401);
+  }
+};

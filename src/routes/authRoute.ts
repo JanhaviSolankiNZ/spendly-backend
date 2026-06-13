@@ -2,7 +2,8 @@ import express from "express";
 import passport from "passport";
 const router = express.Router();
 const rateLimiter = require("express-rate-limit");
-import { register, login, logout, refreshAccessToken, googleCallback } from "../controllers/authController";
+import { register, login, logout, refreshAccessToken, googleCallback, getMe } from "../controllers/authController";
+import { protect } from "../middleware/authMiddleware";
 
 const authLimier = rateLimiter({
     windowMs: 15*60*1000,
@@ -30,5 +31,6 @@ router.post("/register", authLimier, register);
 router.post("/login", authLimier, login);
 router.post("/logout", logout);
 router.post("/refreshAccessToken", refreshAccessToken);
+router.get("/me", protect, getMe);
 
 export default router;
