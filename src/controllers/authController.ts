@@ -110,6 +110,7 @@ export const logout = async (req: Request, res: Response) => {
       });
     }
     res.clearCookie("refreshToken", { path: "/api/auth" });
+    res.clearCookie("accessToken", { path: "/api" });
     sendSuccess(res, null, "Logged out successfully", 200);
   } catch (error) {
     if (error instanceof Error) {
