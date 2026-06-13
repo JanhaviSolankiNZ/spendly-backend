@@ -44,5 +44,5 @@ export const accessCookieOptions: CookieOptions = {
   secure: process.env.NODE_ENV === "production",
   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   maxAge: 15 * 60 * 1000, // 15 minutes
-  path: "/", // IMPORTANT
+  path: "/api", // IMPORTANT
 };
