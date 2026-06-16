@@ -1,23 +1,33 @@
-import mongoose, {Document, Types} from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
 export interface IRefreshToken {
-    token: string;
-    createdAt?: Date;
-    expiresAt: Date;
-    isRevoked?: boolean;
+  token: string;
+  createdAt?: Date;
+  expiresAt: Date;
+  isRevoked?: boolean;
 }
 
 export interface IUser extends Document {
-    username: string;
-    email: string;
-    password: string;
-    refreshTokens: IRefreshToken[];
-    googleId?: string;
-    createdAt: Date;
-    updatedAt: Date;
-    comparePassword(candidatePassword: string): Promise<boolean>;
-    toPublicProfile(): object;
+  username: string;
+  email: string;
+  password: string;
+  refreshTokens: IRefreshToken[];
+  googleId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+  toPublicProfile(): object;
+  plan: "free" | "pro";
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  subscriptionStatus?:
+    | "active"
+    | "canceled"
+    | "past_due"
+    | "trialing"
+    | "incomplete";
+  currentPeriodEnd?: Date;
 }
 
 interface IUserMethods {
@@ -60,14 +70,40 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>(
           type: String,
         },
         createdAt: { type: Date, default: Date.now, required: false },
-        expiresAt: { type: Date, required: true}
+        expiresAt: { type: Date, required: true },
       },
     ],
     googleId: {
-      type:     String,
-      default:  undefined,
-      sparse:   true,  // allows null but enforces unique when present
-      unique:   true,
+      type: String,
+      default: undefined,
+      sparse: true,
+      unique: true,
+    },
+    plan: {
+      type: String,
+      enum: ["free", "pro"],
+      default: "free",
+    },
+    stripeCustomerId: {
+      type: String,
+      default: undefined,
+      sparse: true,
+      unique: true,
+    },
+    stripeSubscriptionId: {
+      type: String,
+      default: undefined,
+      sparse: true,
+      unique: true,
+    },
+    subscriptionStatus: {
+      type: String,
+      enum: ["active", "canceled", "past_due", "trialing", "incomplete"],
+      default: undefined,
+    },
+    currentPeriodEnd: {
+      type: Date,
+      default: undefined,
     },
   },
   { timestamps: true },

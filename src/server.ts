@@ -12,6 +12,8 @@ import incomeRoutes from "./routes/incomeRoute";
 import analyticsRoutes from "./routes/analyticsRoute";
 import dashboardRoutes from "./routes/dashboardRoute";
 import budgetRoutes from "./routes/budgetRoute";
+import subscriptionRoutes from "./routes/subscriptionRoute";
+import webhookRoute from "./routes/webhookRoute";
 import { protect } from "./middleware/authMiddleware";
 
 const server = express();
@@ -44,6 +46,9 @@ server.use("/api/income", protect, incomeRoutes);
 server.use("/api/analytics", protect, analyticsRoutes);
 server.use("/api/dashboard", protect, dashboardRoutes);
 server.use("/api/budgets", protect, budgetRoutes);
+server.use("/api/payments", webhookRoute);
+server.use("/api/payments", protect, subscriptionRoutes);
+
 connectDB();
 
 const PORT = process.env.PORT || 5000;
