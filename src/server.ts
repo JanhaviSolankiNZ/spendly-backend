@@ -18,6 +18,7 @@ import { protect } from "./middleware/authMiddleware";
 
 const server = express();
 server.set("trust proxy", 1);
+server.use("/api/payments", webhookRoute);
 server.use(express.json({ limit: "10mb" }));
 server.use(express.urlencoded({ extended: true, limit: "10kb" }));
 server.use(cookieParser());
@@ -46,7 +47,7 @@ server.use("/api/income", protect, incomeRoutes);
 server.use("/api/analytics", protect, analyticsRoutes);
 server.use("/api/dashboard", protect, dashboardRoutes);
 server.use("/api/budgets", protect, budgetRoutes);
-server.use("/api/payments", webhookRoute);
+
 server.use("/api/payments", protect, subscriptionRoutes);
 
 connectDB();
