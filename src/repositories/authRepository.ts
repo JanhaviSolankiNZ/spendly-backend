@@ -35,8 +35,6 @@ export const findOrCreateGoogleUser = async ({googleId, email, username}: {googl
         return user;
     }
 
-    console.log(googleId, email, username);
-
     return User.create({
         googleId,
         email,

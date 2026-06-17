@@ -133,8 +133,6 @@ export const createExpenseSummary = async (req: Request, res: Response) => {
   try{
 
       const month = (req.query.month as string) || new Date().toISOString().slice(0,7);
-
-      console.log(month)
       const data = await getExpenseSummaryService(req.user!.id, month);
       sendSuccess(res, data, "Summary fetched successfully", 200);
   }catch(error){

@@ -38,7 +38,6 @@ export const getIncomeSummary = async (userId: string, month: string) => {
     const start = new Date(`${month}-01`);
     const end = new Date(start.getFullYear(), start.getMonth() + 1, 0, 23, 59, 59);
     const uid = new Types.ObjectId(userId);
-        console.log("id", uid)
     const [summary, byType] = await Promise.all([
         Income.aggregate([
             {$match: {userId: uid, date: {$gte: start, $lte: end}}},

@@ -108,8 +108,8 @@ export const logout = async (req: Request, res: Response) => {
         $pull: { refreshTokens: { token } },
       });
     }
-    res.clearCookie("refreshToken", { path: "/api/auth" });
-    res.clearCookie("accessToken", { path: "/api" });
+    res.clearCookie("refreshToken");
+    res.clearCookie("accessToken");
     res.clearCookie("hasSession");
     sendSuccess(res, null, "Logged out successfully", 200);
   } catch (error) {
@@ -122,8 +122,6 @@ export const logout = async (req: Request, res: Response) => {
 
 export const refreshAccessToken = async (req: Request, res: Response) => {
   const token = req.cookies?.refreshToken;
-  console.log("cookies:", req.cookies);
-  console.log("cookie header:", req.headers.cookie);
   if (!token) {
    return sendError(res, "No refresh token provided", 401);
   }
