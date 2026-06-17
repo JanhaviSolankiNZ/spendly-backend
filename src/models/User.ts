@@ -123,11 +123,16 @@ userSchema.methods.comparePassword = async function (
 };
 
 userSchema.methods.toPublicProfile = function () {
+  console.log(this);
   return {
     id: this._id,
     username: this.username,
     email: this.email,
     createdAt: this.createdAt,
+    isPro:
+      this.plan === "pro" &&
+      (this.subscriptionStatus === "active" ||
+        this.subscriptionStatus === "trialing"),
   };
 };
 

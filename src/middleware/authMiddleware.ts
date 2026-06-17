@@ -10,6 +10,7 @@ declare global{
       id:       string;
       email:    string;
       username: string;
+      isPro?: boolean;
     }
     interface Request {
       user?: User;            // ← now uses the interface above
