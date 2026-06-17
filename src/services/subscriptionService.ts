@@ -99,13 +99,12 @@ export const handleWebhookService = async (
       const subscription = await stripe.subscriptions.retrieve(
         session.subscription,
       );
+      const periodEnd = (subscription as any).items?.data?.[0]?.current_period_end;
       await updateUserSubscription(userId, {
         plan: "pro",
         stripeCustomerId: session.customer,
         stripeSubscriptionId: session.subscription,
-        currentPeriodEnd: new Date(
-          (subscription as any).current_period_end * 1000,
-        ),
+        currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000): undefined,
       });
       break;
     }

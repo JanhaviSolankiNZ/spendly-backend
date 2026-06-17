@@ -175,6 +175,7 @@ export const googleCallback = async (req: Request, res: Response) => {
     const refreshToken = createRefreshToken(user._id);
     res.cookie("refreshToken", refreshToken, refreshCookieOptions);
     res.cookie("accessToken", accessToken, accessCookieOptions);
+    res.cookie("hasSession", "true", sessionCookieOptions);
     saveRefreshToken(user, refreshToken);
     await user.save();
 

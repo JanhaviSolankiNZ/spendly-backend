@@ -34,17 +34,15 @@ export const verifyRefreshToken = (token:string) => {
 export const refreshCookieOptions: CookieOptions = {
     httpOnly: true,
     secure: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    path: '/api/auth'
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000
 };
 
 export const accessCookieOptions: CookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: true,
+  sameSite: "none",
   maxAge: 15 * 60 * 1000, // 15 minutes
-  path: "/api", // IMPORTANT
 };
 
 export const sessionCookieOptions: CookieOptions= {
