@@ -1,7 +1,8 @@
 import { groqAxiosInstance } from "../config/axios";
 import { EXPENSE_CATEGORIES, normalise, validateMonth } from "../utils/constants";
 import { IExpense } from "../models/Expense";
-import { createExpense, deleteExpenseById, findExpenseById, findExpenses, getExpensesForExport, getExpenseSummary, IExpenseFilters, updateExpenseById } from "../repositories/expenseRepository";
+import { countExpensesThisMonth, createExpense, deleteExpenseById, findExpenseById, findExpenses, getExpensesForExport, getExpenseSummary, IExpenseFilters, updateExpenseById } from "../repositories/expenseRepository";
+import User from "../models/User";
 
 export const categoriseWithAI = async (
   description: string,
@@ -41,6 +42,15 @@ ${EXPENSE_CATEGORIES.join(", ")} Expense: ${description}`,
 };
 
 export const createExpenseService = async(userId:string, body: Partial<IExpense>) => {
+  const user = await User.findById(userId).select("plan");
+
+  if (user?.plan === "free") {
+    const count = await countExpensesThisMonth(userId);
+    if (count >= 50) {
+      throw new Error("Free plan limit reached. Upgrade to Pro for unlimited expenses.");
+    }
+  }
+
   const expense = await createExpense(userId, body);
   return expense;
 };

@@ -203,3 +203,15 @@ export const getExpensesForExport = async (userId: string, month: string) => {
     .sort({ date: -1 })
     .lean();
 };
+
+
+export const countExpensesThisMonth = async (userId: string): Promise<number> => {
+  const start = new Date();
+  start.setDate(1);
+  start.setHours(0, 0, 0, 0);
+
+  return Expense.countDocuments({
+    userId: new Types.ObjectId(userId),
+    date:   { $gte: start },
+  });
+};

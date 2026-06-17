@@ -1,6 +1,7 @@
 import { Router }  from "express";
 import rateLimit    from "express-rate-limit";
 import { protect }  from "../middleware/authMiddleware";
+import { requirePro } from "../middleware/requirePro";
 import {
   getAnalyticsSummary,
   getBudgetUtilisation,
@@ -21,6 +22,6 @@ const readLimiter = rateLimit({
 router.use(protect);
 
 router.get("/summary", readLimiter, getAnalyticsSummary);
-router.get("/trend",   readLimiter, getSixMonthTrend);
-router.get("/budget",  readLimiter, getBudgetUtilisation);
+router.get("/trend",   readLimiter, requirePro, getSixMonthTrend);
+router.get("/budget",  readLimiter, requirePro, getBudgetUtilisation);
 export default router;

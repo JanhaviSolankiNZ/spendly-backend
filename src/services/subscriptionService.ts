@@ -103,6 +103,7 @@ export const handleWebhookService = async (
       await updateUserSubscription(userId, {
         plan: "pro",
         stripeCustomerId: session.customer,
+        subscriptionStatus: "active",
         stripeSubscriptionId: session.subscription,
         currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000): undefined,
       });

@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import Expense from "../models/Expense";
 import Income  from "../models/Income";
-// import Budget  from "../models/Budget";
+import Budget  from "../models/Budget";
 
 export const getDashboardData = async (userId: string, month: string) => {
   const start = new Date(`${month}-01`);
@@ -20,7 +20,7 @@ export const getDashboardData = async (userId: string, month: string) => {
     prevIncomeSummary,
     recentExpenses,
     recentIncome,
-    // budgetUtilisation,
+    budgetUtilisation,
     dailyExpenses,
   ] = await Promise.all([
 
@@ -67,33 +67,33 @@ export const getDashboardData = async (userId: string, month: string) => {
       .lean(),
 
     // ── budget utilisation per category ───────────────────────────────────────
-    // (async () => {
-    //   const budgets = await Budget.find({ userId: uid }).lean();
-    //   if (budgets.length === 0) return [];
+    (async () => {
+      const budgets = await Budget.find({ userId: uid }).lean();
+      if (budgets.length === 0) return [];
 
-    //   const spent = await Expense.aggregate([
-    //     { $match: { userId: uid, date: { $gte: start, $lte: end } } },
-    //     { $group: { _id: "$category", total: { $sum: "$amount" } } },
-    //   ]);
+      const spent = await Expense.aggregate([
+        { $match: { userId: uid, date: { $gte: start, $lte: end } } },
+        { $group: { _id: "$category", total: { $sum: "$amount" } } },
+      ]);
 
-    //   const spentMap: Record<string, number> = {};
-    //   spent.forEach((s) => { spentMap[s._id] = s.total; });
+      const spentMap: Record<string, number> = {};
+      spent.forEach((s) => { spentMap[s._id] = s.total; });
 
-    //   return budgets.map((b) => {
-    //     const spentAmount = spentMap[b.category] ?? 0;
-    //     const percent     = b.limit > 0
-    //       ? parseFloat(((spentAmount / b.limit) * 100).toFixed(1))
-    //       : 0;
-    //     return {
-    //       category:     b.category,
-    //       limit:        b.limit,
-    //       spent:        spentAmount,
-    //       remaining:    Math.max(b.limit - spentAmount, 0),
-    //       percent,
-    //       isOverBudget: spentAmount > b.limit,
-    //     };
-    //   });
-    // })(),
+      return budgets.map((b) => {
+        const spentAmount = spentMap[b.category] ?? 0;
+        const percent     = b.limit > 0
+          ? parseFloat(((spentAmount / b.limit) * 100).toFixed(1))
+          : 0;
+        return {
+          category:     b.category,
+          limit:        b.limit,
+          spent:        spentAmount,
+          remaining:    Math.max(b.limit - spentAmount, 0),
+          percent,
+          isOverBudget: spentAmount > b.limit,
+        };
+      });
+    })(),
 
     // ── daily expense totals — sparkline / mini line chart ────────────────────
     Expense.aggregate([
@@ -147,7 +147,7 @@ export const getDashboardData = async (userId: string, month: string) => {
     recentIncome,
 
     // ── budget bars ────────────────────────────────────────────────────────────
-    // budgets: budgetUtilisation,
+    budgets: budgetUtilisation,
 
     // ── daily spending sparkline ───────────────────────────────────────────────
     dailyExpenses: dailyExpenses.map((d) => ({
